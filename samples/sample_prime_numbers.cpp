@@ -7,7 +7,7 @@
 
 #include <iomanip>
 
-// #define USE_SET // Использовать класс TSet,
+//#define USE_SET // Использовать класс TSet,
                 // закоментировать, чтобы использовать битовое поле
 
 #ifndef USE_SET // Использовать класс TBitField
@@ -55,7 +55,7 @@ int main1()
 
 #include "tset.h"
 
-int main()
+int main2()
 {
   int n, m, k, count;
 
@@ -90,6 +90,7 @@ int main()
     }
   cout << endl;
   cout << "В первых " << n << " числах " << count << " простых" << endl;
+  return 0;
 }
 
 #endif
@@ -98,7 +99,17 @@ int main()
 
 int main()
 {
-	TBitField bf(1);
+    const int size = 38;
+    TBitField bf(size), negBf(size), expNegBf(size);
+    bf.SetBit(35);
+    negBf = ~bf;
+    cout << negBf;
+    for (int i = 0; i < size; i++)
+        expNegBf.SetBit(i);
+    expNegBf.ClrBit(35);
 
-	return 0;
+    cout << endl;
+    expNegBf.SetBit(0);
+    cout << expNegBf;
+ 
 }

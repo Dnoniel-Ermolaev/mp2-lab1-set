@@ -1,6 +1,6 @@
-#include "pch.h"
+//#include "pch.h"
 
-//#include "../gtest/gtest.h"
+#include "../gtest/gtest.h"
 
 
 #include "tset.h"
@@ -136,7 +136,7 @@ TEST(TSet, can_insert_non_existing_element_using_plus_operator)
   set.InsElem(2);
   updatedSet = set + k;
 
-  EXPECT_NE(0, updatedSet.IsMember(k));
+  EXPECT_NE(0, updatedSet.IsMember(k)); //Дичь какая-то NE
 }
 
 TEST(TSet, throws_when_insert_non_existing_element_out_of_range_using_plus_operator)
