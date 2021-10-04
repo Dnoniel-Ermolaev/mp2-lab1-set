@@ -16,7 +16,7 @@ TBitField::TBitField(int len)
 
 	if (len > 0) {
 		BitLen = len;
-		MemLen = (BitLen + BITS_IN_ONE_MEM - 1) / BITS_IN_ONE_MEM;
+		MemLen = ((BitLen)/BITS_IN_ONE_MEM)+1;
 		pMem = new TELEM[MemLen];
 
 		for (size_t i = 0; i < MemLen; i++) {
@@ -34,9 +34,9 @@ TBitField::TBitField(const TBitField& bf) // конструктор копиро
 	MemLen = bf.MemLen;
 	pMem = new TELEM[MemLen];
 
-	for (size_t i = 0; i < MemLen; i++) {
+	/*for (size_t i = 0; i < MemLen; i++) {
 		pMem[i] = 0;
-	}
+	}*/
 
 	for (size_t i = 0; i < MemLen; i++) {
 		pMem[i] = bf.pMem[i];
@@ -61,7 +61,7 @@ int TBitField::GetMemIndex(const int n) const // индекс Мем для би
 TELEM TBitField::GetMemMask(const int n) const // битовая маска для бита n
 {
 	if (n >= 0 && n < BitLen) {
-		return (TELEM)1 << n;
+		return (TELEM)1 << (n%BITS_IN_ONE_MEM);
 	}
 	else {
 		throw "error number bit";
@@ -101,7 +101,7 @@ void TBitField::ClrBit(const int n) // очистить бит
 int TBitField::GetBit(const int n) const // получить значение бита
 {
 	if (n >= 0 && n <= BitLen) {
-		return (pMem[n / BITS_IN_ONE_MEM] & (1 << n)) > 0;
+		return (pMem[n / BITS_IN_ONE_MEM] & ((TELEM)1 << (n%BITS_IN_ONE_MEM))) > 0;
 	}
 	else {
 		throw "error get bit";
@@ -185,7 +185,7 @@ TBitField TBitField::operator&(const TBitField& bf) // операция "и"
 }
 
 TBitField TBitField::operator~(void) // отрицание
-{
+	{
 	TBitField res(*this);
 	for (int i = 0; i < MemLen - 1; i++)
 		res.pMem[i] = ~res.pMem[i];
@@ -196,30 +196,49 @@ TBitField TBitField::operator~(void) // отрицание
 			else
 				res.SetBit(i);
 	return res;
-}
+	}
+
 
 // ввод/вывод
 
 istream& operator>>(istream& istr, TBitField& bf) // ввод
 {
-	string str;
-	istr >> str;
-	for (int i = 0; i < bf.BitLen; i++)
+	size_t size;
+	string in_string;
+	istr >> in_string;
+	
+	size = in_string.length();
+	bf = TBitField(size);
+	for (int i = 0; i < size; ++i)
 	{
-		if (str[i] == '1')
+		if (in_string[i] == '1')
 			bf.SetBit(i);
-		else if (str[i] == '0')
-			bf.ClrBit(i);
+			//bf.SetBit(size - i - 1);
+		else if (in_string[i] != '1' && in_string[i] != '0')
+		{
+			throw "Bad input";
+		}
 	}
-
 	return istr;
 }
 
 ostream& operator<<(ostream& ostr, const TBitField& bf) // вывод
 {
-	string str;
+	try
+	{
+		for (size_t i = bf.GetLength(); i>0; --i)
+		{
+			ostr << bf.GetBit(i-1);
+		}
+	}
+	catch (std::exception& error)
+	{
+		throw error;
+	}
+	return ostr;
+	/*string str;
 	for (size_t i = 0; i < bf.BitLen; i++) {
 		str.push_back(bf.GetBit(i) + '0');
 	}
-	return ostr << str;
+	return ostr << str;*/
 }

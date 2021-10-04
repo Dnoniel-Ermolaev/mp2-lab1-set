@@ -3,8 +3,51 @@
 #include "../gtest/gtest.h"
 
 #include "tbitfield.h"
+#define BITS_IN_ONE_MEM (sizeof(TELEM) * 8)
 
+class ParameterizedBitFields : public ::testing::TestWithParam<int>
+{
+protected:
+    TBitField bf1;
 
+public:
+    ParameterizedBitFields() : bf1(GetParam())
+    {
+        for (int i = 0; i < GetParam(); i += 10)
+            bf1.SetBit(i);
+    }
+
+    ~ParameterizedBitFields() {}
+};
+
+TEST_P(ParameterizedBitFields, can_create_bitfield)
+{
+    EXPECT_EQ(GetParam(), bf1.GetLength());
+}
+
+TEST_P(ParameterizedBitFields, inverse_is_correct)
+{
+    int maxSize = GetParam() + BITS_IN_ONE_MEM - GetParam() % BITS_IN_ONE_MEM;
+    TBitField res(maxSize);
+
+    res = res | (~bf1);
+
+    EXPECT_EQ(1, res.GetBit(GetParam() - 1));
+    EXPECT_EQ(0, res.GetBit(GetParam()));
+    EXPECT_EQ(0, res.GetBit(maxSize - 1));
+}
+
+INSTANTIATE_TEST_CASE_P(Instantiation1,
+    ParameterizedBitFields,
+    ::testing::Values(20, 100, 1000));
+
+int test_values[] = { 30, 300 };
+
+INSTANTIATE_TEST_CASE_P(Instantiation2,
+    ParameterizedBitFields,
+    ::testing::ValuesIn(test_values));
+
+//____________________________________________________________________
 TEST(TBitField, can_create_bitfield_with_positive_length)
 {
   ASSERT_NO_THROW(TBitField bf(3));

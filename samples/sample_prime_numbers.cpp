@@ -99,19 +99,31 @@ int main2()
 
 int main()
 {
+    cout << endl;
     cout << (sizeof(TELEM) * 8);
     cout << endl;
-    const int size = 135;
+    const int size = 38;
     TBitField bf(size), negBf(size), expNegBf(size);
-    bf.SetBit(70);
+    bf.SetBit(35);
+    
     negBf = ~bf;
+ 
+    //negBf = bf;
     cout << negBf;
-    for (int i = 0; i < size; i++)
-        expNegBf.SetBit(i);
-    expNegBf.ClrBit(70);
+   
+    cout << endl;
+    cout << (negBf.GetBit(35));
+    cout << endl;
+    cout << (bf.GetBit(35));
+    cout << endl;
+
+   // for (int i = 0; i < size; i++)
+     //   expNegBf.SetBit(i);
+    //expNegBf.ClrBit(35);
+    expNegBf.SetBit(35);
 
     cout << endl;
-    expNegBf.SetBit(0);
+   // expNegBf.SetBit(0);
     cout << expNegBf;
     cout<<endl;
     cout << (expNegBf == negBf);
